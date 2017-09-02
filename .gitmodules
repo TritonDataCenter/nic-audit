@@ -1,0 +1,28 @@
+[submodule "src/github.com/flynn/json5"]
+	path = src/github.com/flynn/json5
+	url = https://github.com/flynn/json5.git
+        ignore = dirty
+[submodule "src/github.com/hashicorp/errwrap"]
+	path = src/github.com/hashicorp/errwrap
+	url = https://github.com/hashicorp/errwrap.git
+[submodule "src/github.com/joyent/triton-go"]
+	path = src/github.com/joyent/triton-go
+	url = https://github.com/joyent/triton-go.git
+[submodule "src/github.com/kylelemons/godebug"]
+	path = src/github.com/kylelemons/godebug
+	url = https://github.com/kylelemons/godebug.git
+[submodule "src/github.com/pborman/getopt"]
+	path = src/github.com/pborman/getopt
+	url = https://github.com/pborman/getopt.git
+[submodule "src/github.com/robertkrimen/otto"]
+	path = src/github.com/robertkrimen/otto
+	url = https://github.com/robertkrimen/otto.git
+[submodule "src/github.com/stretchr/testify"]
+	path = src/github.com/stretchr/testify
+	url = https://github.com/stretchr/testify.git
+[submodule "src/github.com/twinj/uuid"]
+	path = src/github.com/twinj/uuid
+	url = https://github.com/twinj/uuid.git
+[submodule "src/github.com/jordan-wright/email"]
+	path = src/github.com/jordan-wright/email
+	url = https://github.com/jordan-wright/email.git

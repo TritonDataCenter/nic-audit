@@ -1,0 +1,53 @@
+// This file is in the json5 format: https://github.com/json5/json5
+{
+  "email_alerts" : {
+    "smtp_server" : "localhost:25",
+    "to" : [ "sysadmin@some.site" ],
+    "cc" : [],
+    "bcc" : [],
+    "from_name" : "Triton NIC Audit",
+    "from" : "triton-nic-audit@some.site",
+    "subject" : "Illegal Network Configuration Detected"
+  },
+  /* nic_groups contains all of the matching patterns to trigger
+   * an audit alert. */
+  "nic_groups" : {
+    /* Each key within nic_groups identifies a single matching
+     * pattern. */
+    "jpc-private-and-privileged-intranet" : [
+      /* Each value within the matching pattern can contain a
+       * UUID that identifies the network, a CIDR that matches
+       * the network or the string 'public' which indicates any
+       * public network. */
+      "192.168.24.0/21", "e70b8c02-91b8-11e7-ae1f-9392cd8e4bf7"
+    ],
+    "jpc-public-and-privileged-intranet" : [
+      "public", "e70b8c02-91b8-11e7-ae1f-9392cd8e4bf7"
+    ],
+    "unprivileged-network-and-privileged-intranet" : [
+      "540b28d0-91b9-11e7-9d4c-e357026afdb4", "e70b8c02-91b8-11e7-ae1f-9392cd8e4bf7"
+    ]
+  },
+  /* Below is a list of all of the accounts in which to audit
+   * for unwanted network configurations. */
+  "accounts" : [
+    {
+      // Plain text description of the account to use in alerts
+      "description" : "A plain-text description of the account",
+      // Username used to login
+      "account_name" : "some.user",
+      // CloudAPI endpoint (change this to change regions/data centers)
+      "triton_url" : "https://us-sw-1.api.joyent.com/",
+      // Path on local filesystem to private key used to authenticate
+      "key_path" : "/home/user/.ssh/id_rsa",
+      // Signature of private key used to authenticate
+      "key_id" : "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00",
+      // Optional list of networks to remove when a network is matched
+      "networks_to_remove" : [
+        // Format of network values is the same as the matching pattern
+        "192.168.24.0/21", // remove JPC-Private NIC
+        "public", // remove JPC-Public NIC
+      ]
+    }
+  ]
+}
