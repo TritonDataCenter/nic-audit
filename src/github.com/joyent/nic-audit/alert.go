@@ -111,8 +111,16 @@ func emailAlerts(emailAlertConfig EmailAlerts, body string) {
 	mail.Headers.Add("MIME-version", "1.0")
 	mail.Headers.Add("Content-Transfer-Encoding", "quoted-printable")
 
-	mail.HTML = []byte(fmt.Sprintf("<html><body><pre>%v</pre></body></html>", body))
-	mail.Text = []byte(body)
+	if len(emailAlertConfig.AdditionalBody) > 0 {
+		htmlFormat := "<html><body><pre>%v</pre><p>%v</p></body></html>"
+		mail.HTML = []byte(fmt.Sprintf(htmlFormat, body,
+			emailAlertConfig.AdditionalBody))
+		body += "\n\n" + emailAlertConfig.AdditionalBody
+	} else {
+		htmlFormat := "<html><body><pre>%v</pre></body></html>"
+		mail.HTML = []byte(fmt.Sprintf(htmlFormat, body))
+		mail.Text = []byte(body)
+	}
 
 	serverWithPort := fmt.Sprintf("%v:%v", emailAlertConfig.SmtpServer,
 		emailAlertConfig.SmtpPort)

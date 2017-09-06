@@ -14,7 +14,9 @@
     "bcc" : [],
     "from_name" : "Triton NIC Audit",
     "from" : "triton-nic-audit@some.site",
-    "subject" : "Illegal Network Configuration Detected"
+    "subject" : "Illegal Network Configuration Detected",
+    // Additional message to include in email
+    "additional_body" : ""
   },
   // RFC 1918 networks are defined below - you can add or modify this list
   "private_network_blocks" : [

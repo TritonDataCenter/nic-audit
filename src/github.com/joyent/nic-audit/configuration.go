@@ -31,17 +31,18 @@ type Configuration struct {
 // EmailAlerts contains the configuration needed to send an email to alert when
 // an offending network match is found.
 type EmailAlerts struct {
-	SmtpServer   string `json:"smtp_server"`
-	SmtpPort     int    `json:"smtp_port"`
-	SmtpIdentity string `json:"smtp_identity"`
-	SmtpUser     string `json:"smtp_user"`
-	SmtpPassword string `json:"smtp_password"`
-	To           []string
-	CC           []string
-	BCC          []string
-	From         string
-	FromName     string `json:"from_name"`
-	Subject      string
+	SmtpServer     string `json:"smtp_server"`
+	SmtpPort       int    `json:"smtp_port"`
+	SmtpIdentity   string `json:"smtp_identity"`
+	SmtpUser       string `json:"smtp_user"`
+	SmtpPassword   string `json:"smtp_password"`
+	To             []string
+	CC             []string
+	BCC            []string
+	From           string
+	FromName       string `json:"from_name"`
+	Subject        string
+	AdditionalBody string `json:"additional_body"`
 }
 
 // Account contains the configuration details describing a single Triton
