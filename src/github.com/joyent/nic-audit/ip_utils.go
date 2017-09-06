@@ -8,22 +8,33 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net"
 )
 
-// isPrivateIP determines if the specified IP address is a RFC 1918
+// isPrivateIP determines if the specified IP address is on a
 // private network.
-func isPrivateIP(ip net.IP) bool {
-	_, private24BitBlock, _ := net.ParseCIDR("10.0.0.0/8")
-	_, private20BitBlock, _ := net.ParseCIDR("172.16.0.0/12")
-	_, private16BitBlock, _ := net.ParseCIDR("192.168.0.0/16")
-	return private24BitBlock.Contains(ip) ||
-		private20BitBlock.Contains(ip) ||
-		private16BitBlock.Contains(ip)
+func isPrivateIP(ip net.IP, privateBlocks []string) bool {
+	for i := 0; i < len(privateBlocks); i++ {
+		_, privateBlock, parseErr := net.ParseCIDR(privateBlocks[i])
+
+		if parseErr != nil {
+			msg := fmt.Sprintf("Unable to parse private network [%v]. %v",
+				privateBlock, parseErr)
+			log.Fatalln(msg)
+		}
+
+		if privateBlock.Contains(ip) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // isPublicIP determines if the specified IP address is not a RFC 1918
 // private network.
-func isPublicIP(ip net.IP) bool {
-	return !isPrivateIP(ip)
+func isPublicIP(ip net.IP, privateBlocks []string) bool {
+	return !isPrivateIP(ip, privateBlocks)
 }

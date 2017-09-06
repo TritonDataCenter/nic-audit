@@ -40,7 +40,8 @@ func auditAccount(account Account, nicGroups map[string][]string, config Configu
 		return instancesErr
 	}
 
-	alerts := createAlertsForOffendingNetworks(account, instances, nicGroups)
+	alerts := createAlertsForOffendingNetworks(account, instances, nicGroups,
+		config.PrivateNetworkBlocks)
 	processAlerts(alerts, *client, config)
 
 	return nil
@@ -74,13 +75,14 @@ func setupTritonClient(account Account) (*compute.ComputeClient, error) {
 // createAlertsForOffendingNetworks aggregates alerts for every offending
 // network pattern match and returns the results as a list.
 func createAlertsForOffendingNetworks(account Account, instances []*compute.Instance,
-	nicGroups map[string][]string) list.List {
+	nicGroups map[string][]string, privateNetworkBlocks []string) list.List {
 
 	alerts := list.New()
 
 	for _, instance := range instances {
 		for nicGroup, networkIds := range nicGroups {
-			matchingTotal := countMatchingNetworkIds(*instance, networkIds)
+			matchingTotal := countMatchingNetworkIds(*instance, networkIds,
+				privateNetworkBlocks)
 
 			if matchingTotal == len(networkIds) {
 				alert := Alert{
@@ -101,7 +103,7 @@ func createAlertsForOffendingNetworks(account Account, instances []*compute.Inst
 // offending network match criteria. Typically, the result of this method
 // would be compared to the number of offending networks in the nib_groups
 // configuration.
-func countMatchingNetworkIds(instance compute.Instance, searchStrings []string) int {
+func countMatchingNetworkIds(instance compute.Instance, searchStrings []string, privateNetworkBlocks []string) int {
 	count := 0
 
 	for _, search := range searchStrings {
@@ -131,7 +133,7 @@ func countMatchingNetworkIds(instance compute.Instance, searchStrings []string) 
 		if search == "public" {
 			for _, instanceIpString := range instance.IPs {
 				instanceIp := net.ParseIP(instanceIpString)
-				if isPublicIP(instanceIp) {
+				if isPublicIP(instanceIp, privateNetworkBlocks) {
 					count += 1
 				}
 			}

@@ -22,9 +22,10 @@ import (
 
 // Configuration contains all of the configuration values for the application.
 type Configuration struct {
-	EmailAlerts EmailAlerts         `json:"email_alerts"`
-	NicGroups   map[string][]string `json:"nic_groups"`
-	Accounts    []Account           `json:"accounts"`
+	EmailAlerts          EmailAlerts         `json:"email_alerts"`
+	PrivateNetworkBlocks []string            `json:"private_network_blocks"`
+	NicGroups            map[string][]string `json:"nic_groups"`
+	Accounts             []Account           `json:"accounts"`
 }
 
 // EmailAlerts contains the configuration needed to send an email to alert when

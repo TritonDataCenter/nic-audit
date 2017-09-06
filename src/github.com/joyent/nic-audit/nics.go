@@ -21,7 +21,8 @@ import (
 // removeNICsBasedOnNetworks removes all NICs from the specified instance
 // where the NIC connects to one of the specified networks.
 func removeNICsBasedOnNetworks(networks []string,
-	instance compute.Instance, client compute.ComputeClient) ([]string, error) {
+	instance compute.Instance, client compute.ComputeClient,
+	privateNetworkBlocks []string) ([]string, error) {
 
 	listNICsInput := compute.ListNICsInput{
 		InstanceID: instance.ID,
@@ -67,7 +68,7 @@ func removeNICsBasedOnNetworks(networks []string,
 			// If our "network" is generalized "public" network
 			if network == "public" {
 				nicIp := net.ParseIP(nic.IP)
-				if isPublicIP(nicIp) {
+				if isPublicIP(nicIp, privateNetworkBlocks) {
 					macs[macCount] = nic.MAC
 					networksToRemove[macCount] = network
 					macCount++

@@ -67,7 +67,9 @@ func processAlerts(alerts list.List, client compute.ComputeClient,
 		aggregate += fmt.Sprintf("  Instance Networks: %v\n", alert.Instance.Networks)
 
 		if len(account.NetworksToRemove) > 0 {
-			networksRemoved, removeErr := removeNICsBasedOnNetworks(account.NetworksToRemove, alert.Instance, client)
+			networksRemoved, removeErr := removeNICsBasedOnNetworks(
+				account.NetworksToRemove, alert.Instance, client,
+				config.PrivateNetworkBlocks)
 			if removeErr != nil {
 				log.Printf("Error removing network for instance [%v]: %v\n",
 					alert.Instance.ID, removeErr)
@@ -88,8 +90,8 @@ func processAlerts(alerts list.List, client compute.ComputeClient,
 
 // logAlert outputs a message to STDOUT reporting the specified alert.
 func logAlert(alert Alert) {
-	alertLogger.Printf("%v: %v %v\n", alert.NicGroupName,
-		alert.Instance.Name, alert.Instance.IPs)
+	alertLogger.Printf("%v: %v (%v) %v\n", alert.NicGroupName,
+		alert.Instance.Name, alert.Instance.ID, alert.Instance.IPs)
 }
 
 // emailAlerts emails the contents of the specified body text to the

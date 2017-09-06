@@ -9,6 +9,12 @@
     "from" : "triton-nic-audit@some.site",
     "subject" : "Illegal Network Configuration Detected"
   },
+  // RFC 1918 networks are defined below - you can add or modify this list
+  "private_network_blocks" : [
+    "10.0.0.0/8",
+    "172.16.0.0/12",
+    "192.168.0.0/16"
+  ],
   /* nic_groups contains all of the matching patterns to trigger
    * an audit alert. */
   "nic_groups" : {
