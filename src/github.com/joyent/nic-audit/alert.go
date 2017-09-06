@@ -113,6 +113,10 @@ func emailAlerts(emailAlertConfig EmailAlerts, body string) {
 	mail.HTML = []byte(fmt.Sprintf("<html><body><pre>%v</pre></body></html>", body))
 	mail.Text = []byte(body)
 
-	mail.Send(emailAlertConfig.SmtpServer, smtp.PlainAuth("", "", "",
+	mailErr := mail.Send(emailAlertConfig.SmtpServer, smtp.PlainAuth("", "", "",
 		emailAlertConfig.SmtpServer))
+
+	if mailErr != nil {
+		log.Printf("Error sending alert email. %v\n", mailErr)
+	}
 }
