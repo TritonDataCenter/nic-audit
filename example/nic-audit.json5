@@ -1,7 +1,14 @@
 // This file is in the json5 format: https://github.com/json5/json5
 {
   "email_alerts" : {
-    "smtp_server" : "localhost:25",
+    "smtp_server" : "localhost",
+    "smtp_port" : 25,
+    // Identity string to pass to SMTP authentication
+    "smtp_identity" : "",
+    // User to authenticate as - if this is blank, then no authentication will be used
+    "smtp_user" : "",
+    // Password to use for authentication
+    "smtp_password" : "",
     "to" : [ "sysadmin@some.site" ],
     "cc" : [],
     "bcc" : [],

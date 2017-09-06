@@ -11,13 +11,14 @@ import (
 	"container/list"
 	"fmt"
 	"log"
-	"net/smtp"
+	//	"net/smtp"
 	"os"
 )
 
 import (
 	"github.com/jordan-wright/email"
 	"github.com/joyent/triton-go/compute"
+	"net/smtp"
 )
 
 var alertLogger *log.Logger
@@ -113,10 +114,20 @@ func emailAlerts(emailAlertConfig EmailAlerts, body string) {
 	mail.HTML = []byte(fmt.Sprintf("<html><body><pre>%v</pre></body></html>", body))
 	mail.Text = []byte(body)
 
-	mailErr := mail.Send(emailAlertConfig.SmtpServer, smtp.PlainAuth("", "", "",
-		emailAlertConfig.SmtpServer))
+	serverWithPort := fmt.Sprintf("%v:%v", emailAlertConfig.SmtpServer,
+		emailAlertConfig.SmtpPort)
+
+	var auth smtp.Auth = nil
+
+	if len(emailAlertConfig.SmtpUser) > 0 {
+		auth = smtp.PlainAuth(emailAlertConfig.SmtpIdentity, emailAlertConfig.SmtpUser,
+			emailAlertConfig.SmtpPassword, emailAlertConfig.SmtpServer)
+	}
+
+	mailErr := mail.Send(serverWithPort, auth)
 
 	if mailErr != nil {
-		log.Printf("Error sending alert email. %v\n", mailErr)
+		log.Printf("Error sending alert email using SMTP server [%v]. %v\n",
+			serverWithPort, mailErr)
 	}
 }

@@ -5,6 +5,7 @@ This project aims to adhere to [Semantic Versioning](http://semver.org/).
 ## [0.1.1] - 2017-09-06
 ### Added
  - Email errors are now logged
+ - SMTP user authentication has been added
 
 ## [0.1.0] - 2017-09-05
 ### Added
