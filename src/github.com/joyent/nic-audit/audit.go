@@ -103,16 +103,40 @@ func createAlertsForOffendingNetworks(account Account, instances []*compute.Inst
 // offending network match criteria. Typically, the result of this method
 // would be compared to the number of offending networks in the nib_groups
 // configuration.
-func countMatchingNetworkIds(instance compute.Instance, searchStrings []string, privateNetworkBlocks []string) int {
+func countMatchingNetworkIds(instance compute.Instance, searchStrings []string,
+	privateNetworkBlocks []string) int {
+
+	/* We correlate ip to network name in a map so that we only count a single
+	 * network once even if it matches multiple criteria. */
+	netToIps := make(map[string]string)
+
+	/* We make a *huge* assumption that the networks are in the same order
+	 * as the IPs and that they are always the same number. */
+	if len(instance.Networks) != len(instance.IPs) {
+		log.Fatalf("Network list [%v] doesn't match IP list [%v]\n",
+			instance.Networks, instance.IPs)
+	}
+
+	for i := 0; i < len(instance.Networks); i++ {
+		ip := instance.IPs[i]
+		network := instance.Networks[i]
+		netToIps[ip] = network
+	}
+
 	count := 0
+
+	/* We have poor algorithmic performance below because of loops within loops.
+	 * However, the good news is the values for N typically are all below 5, so
+	 * typically performance is acceptable. */
 
 	for _, search := range searchStrings {
 		// If our search string is another UUID it is a simple match
 		_, uuidErr := uuid.Parse(search)
 		if uuidErr == nil {
-			for _, id := range instance.Networks {
-				if id == search {
+			for ip, networkId := range netToIps {
+				if networkId == search {
 					count += 1
+					delete(netToIps, ip)
 				}
 			}
 			continue
@@ -121,20 +145,24 @@ func countMatchingNetworkIds(instance compute.Instance, searchStrings []string, 
 		// If our search string is a CIDR
 		_, ipNet, ipErr := net.ParseCIDR(search)
 		if ipErr == nil {
-			for _, instanceIpString := range instance.IPs {
-				instanceIp := net.ParseIP(instanceIpString)
+			for ip, networkId := range netToIps {
+				instanceIp := net.ParseIP(ip)
 				if ipNet.Contains(instanceIp) {
 					count += 1
+					delete(netToIps, ip)
+					deleteByValue(netToIps, networkId)
 				}
 			}
 			continue
 		}
 
 		if search == "public" {
-			for _, instanceIpString := range instance.IPs {
-				instanceIp := net.ParseIP(instanceIpString)
+			for ip, networkId := range netToIps {
+				instanceIp := net.ParseIP(ip)
 				if isPublicIP(instanceIp, privateNetworkBlocks) {
 					count += 1
+					delete(netToIps, ip)
+					deleteByValue(netToIps, networkId)
 				}
 			}
 			continue
