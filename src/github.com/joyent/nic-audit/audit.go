@@ -137,6 +137,7 @@ func countMatchingNetworkIds(instance compute.Instance, searchStrings []string,
 				if networkId == search {
 					count += 1
 					delete(netToIps, ip)
+					deleteByValue(netToIps, networkId)
 				}
 			}
 			continue

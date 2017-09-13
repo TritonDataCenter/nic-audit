@@ -187,7 +187,7 @@ func TestCountOfMatchingNetworkIdsMatchesPublicAndCIDRShouldCountAsOne(t *testin
 	}
 }
 
-func TestCountOfMatchingNetworkIdsMatchesTwoCIDRShouldCountAsOne(t *testing.T) {
+func TestCountOfMatchingNetworkIdsMatchesTwoCIDROutOfMantyShouldCountAsOne(t *testing.T) {
 	instanceNetworks := []string{
 		"70294144-7680-43d2-9ed0-897ce1658f80",
 		"14323a83-b0e3-44e8-bd67-fc7078cc94ba",
@@ -212,6 +212,40 @@ func TestCountOfMatchingNetworkIdsMatchesTwoCIDRShouldCountAsOne(t *testing.T) {
 		"10.0.0.0/8",
 		"172.16.0.0/12",
 		"192.168.0.0/16",
+	}
+
+	count := countMatchingNetworkIds(instance, search, privateBlocks)
+
+	if count != 1 {
+		t.Errorf("Expected 1 networks matched. Actually matched %v networks.",
+			count)
+	}
+}
+
+func TestCountOfMatchingNetworkIdsMatchesTwoCIDRShouldCountAsOne(t *testing.T) {
+	instanceNetworks := []string{
+		"e8bc049e-9804-11e7-b5fa-43719e86e8fe",
+		"e8bc049e-9804-11e7-b5fa-43719e86e8fe",
+	}
+
+	ips := []string{
+		"105.160.112.195", "105.160.112.196",
+	}
+
+	instance := compute.Instance{
+		Networks: instanceNetworks,
+		IPs:      ips,
+	}
+
+	search := []string{
+		"public", "e8bc049e-9804-11e7-b5fa-43719e86e8fe",
+	}
+
+	privateBlocks := []string{
+		"10.0.0.0/8",
+		"172.16.0.0/12",
+		"192.168.0.0/16",
+		"105.160.112.0/22",
 	}
 
 	count := countMatchingNetworkIds(instance, search, privateBlocks)
