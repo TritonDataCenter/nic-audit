@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project aims to adhere to [Semantic Versioning](http://semver.org/).
 
+## [0.3.0] - 2017-09-15
+## Added
+ - Allow for adding multiple CIDRs to map to a single logical "network"
+
 ## [0.2.1] - 2017-09-12
 ### Fixed
  - Fixes [Two NICs from the same network added to a single instance will trigger an alert](https://github.com/joyent/nic-audit/issues/1) 

@@ -144,14 +144,17 @@ func countMatchingNetworkIds(instance compute.Instance, searchStrings []string,
 		}
 
 		// If our search string is a CIDR
-		_, ipNet, ipErr := net.ParseCIDR(search)
+		ipNets, ipErr := parseMultipleCIDRs(search)
 		if ipErr == nil {
 			for ip, networkId := range netToIps {
 				instanceIp := net.ParseIP(ip)
-				if ipNet.Contains(instanceIp) {
-					count += 1
-					delete(netToIps, ip)
-					deleteByValue(netToIps, networkId)
+
+				for _, ipNet := range ipNets {
+					if ipNet.Contains(instanceIp) {
+						count += 1
+						delete(netToIps, ip)
+						deleteByValue(netToIps, networkId)
+					}
 				}
 			}
 			continue

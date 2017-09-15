@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 )
 
 // isPrivateIP determines if the specified IP address is on a
@@ -37,4 +38,50 @@ func isPrivateIP(ip net.IP, privateBlocks []string) bool {
 // private network.
 func isPublicIP(ip net.IP, privateBlocks []string) bool {
 	return !isPrivateIP(ip, privateBlocks)
+}
+
+// parseMultipleCIDRs parses a comma delimited list of CIDRs and returns an
+// array containing all valid values.
+func parseMultipleCIDRs(input string) ([]net.IPNet, error) {
+	if strings.Contains(input, ",") {
+		uniqueCidrs := make(map[string]bool)
+
+		elements := strings.Split(input, ",")
+
+		cidrs := make([]net.IPNet, len(elements))
+
+		count := 0
+		for _, element := range elements {
+			cidr := strings.TrimSpace(element)
+
+			if len(cidr) < 1 {
+				continue
+			}
+
+			_, ipNet, ipErr := net.ParseCIDR(strings.TrimSpace(cidr))
+
+			if ipErr != nil {
+				log.Printf("Invalid CIDR specified: %v\n", cidr)
+				continue
+			}
+
+			if uniqueCidrs[ipNet.String()] {
+				log.Printf("Duplicate CIDR specified: %v\n", cidr)
+				continue
+			}
+
+			cidrs[count] = *ipNet
+			uniqueCidrs[ipNet.String()] = true
+			count++
+		}
+
+		return cidrs[0:count], nil
+	}
+
+	_, ipNet, ipErr := net.ParseCIDR(strings.TrimSpace(input))
+	if ipErr != nil {
+		return nil, ipErr
+	} else {
+		return []net.IPNet{*ipNet}, nil
+	}
 }

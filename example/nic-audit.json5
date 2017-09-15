@@ -34,7 +34,7 @@
        * UUID that identifies the network, a CIDR that matches
        * the network or the string 'public' which indicates any
        * public network. */
-      "192.168.24.0/21", "e70b8c02-91b8-11e7-ae1f-9392cd8e4bf7"
+      "192.168.24.0/21,192.168.192.0/21", "e70b8c02-91b8-11e7-ae1f-9392cd8e4bf7"
     ],
     "jpc-public-and-privileged-intranet" : [
       "public", "e70b8c02-91b8-11e7-ae1f-9392cd8e4bf7"
@@ -61,6 +61,7 @@
       "networks_to_remove" : [
         // Format of network values is the same as the matching pattern
         "192.168.24.0/21", // remove JPC-Private NIC
+        "192.168.192.0/21", // remove JPC-Private NIC
         "public", // remove JPC-Public NIC
       ]
     }

@@ -187,7 +187,7 @@ func TestCountOfMatchingNetworkIdsMatchesPublicAndCIDRShouldCountAsOne(t *testin
 	}
 }
 
-func TestCountOfMatchingNetworkIdsMatchesTwoCIDROutOfMantyShouldCountAsOne(t *testing.T) {
+func TestCountOfMatchingNetworkIdsMatchesTwoCIDROutOfManyShouldCountAsOne(t *testing.T) {
 	instanceNetworks := []string{
 		"70294144-7680-43d2-9ed0-897ce1658f80",
 		"14323a83-b0e3-44e8-bd67-fc7078cc94ba",
@@ -251,6 +251,42 @@ func TestCountOfMatchingNetworkIdsMatchesTwoCIDRShouldCountAsOne(t *testing.T) {
 	count := countMatchingNetworkIds(instance, search, privateBlocks)
 
 	if count != 1 {
+		t.Errorf("Expected 1 networks matched. Actually matched %v networks.",
+			count)
+	}
+}
+
+func TestCountOfMatchingNetworkIdsMatchesMultipleCIDRSearch(t *testing.T) {
+	instanceNetworks := []string{
+		"e8bc049e-9804-11e7-b5fa-43719e86e8fe",
+		"84eacf74-8310-4549-b297-96743e5fa947",
+		"a345f0a8-551c-4a33-8040-9bc76440f42c",
+	}
+
+	ips := []string{
+		"192.168.24.7", "105.160.112.196", "10.2.45.234",
+	}
+
+	instance := compute.Instance{
+		Networks: instanceNetworks,
+		IPs:      ips,
+	}
+
+	search := []string{
+		// example of JPC-Private and a user network
+		"192.168.24.0/21, 192.168.192.0/21", "84eacf74-8310-4549-b297-96743e5fa947",
+	}
+
+	privateBlocks := []string{
+		"10.0.0.0/8",
+		"172.16.0.0/12",
+		"192.168.0.0/16",
+		"105.160.112.0/22",
+	}
+
+	count := countMatchingNetworkIds(instance, search, privateBlocks)
+
+	if count != 2 {
 		t.Errorf("Expected 1 networks matched. Actually matched %v networks.",
 			count)
 	}
